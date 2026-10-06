@@ -1,0 +1,38 @@
+# Environment secrets
+.env
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# CTF runtime data
+data/
+uploads/
+
+# Virtual machines
+*.vdi
+*.vmdk
+*.ova
+*.ovf
+
+# Large forensic artifacts
+*.raw
+*.img
+
+# Generated evidence
+evidence/logs/*
