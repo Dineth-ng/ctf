@@ -1,0 +1,48 @@
+services:
+
+  stage1-web:
+    image: nginx:alpine
+    container_name: nighthawk-stage1
+    ports:
+      - "8081:80"
+    volumes:
+      - ./challenges/stage1-osint/website:/usr/share/nginx/html:ro
+    networks:
+      - challenge-net
+    restart: unless-stopped
+
+
+  stage4-web:
+    image: php:8.2-apache
+    container_name: nighthawk-stage4-web
+    ports:
+      - "8084:80"
+    volumes:
+      - ./challenges/stage4-web/src:/var/www/html
+    networks:
+      - challenge-net
+      - backend-net
+    restart: unless-stopped
+
+
+  stage4-db:
+    image: mysql:8.0
+    container_name: nighthawk-stage4-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+
+networks:
+
+  challenge-net:
+    driver: bridge
+
+  backend-net:
+    driver: bridge
+    internal: true
