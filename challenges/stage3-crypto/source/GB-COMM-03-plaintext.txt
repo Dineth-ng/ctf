@@ -1,0 +1,18 @@
+GHOSTBYTE // GB-COMM-03
+
+Legacy operations gateway remains reachable.
+
+Target Host:
+ops.nexacore.local
+
+Service:
+HTTP
+
+Application Path:
+/legacy/auth/
+
+The old maintenance authentication flow is still active.
+
+Use the gateway for the next phase.
+
+NH{communications_decrypted}
