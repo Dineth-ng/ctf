@@ -42,4 +42,10 @@ NH{flag_text}
 
 ## Status
 
-Development in progress.
+Stage 4 is implemented. Start it with:
+
+```bash
+docker compose up -d --build --wait stage4-web stage4-db
+```
+
+Open http://127.0.0.1:8084/legacy/auth/ . See [the Stage 4 guide](challenges/stage4-web/README.md) for configuration, CTFd setup, validation, and reset instructions.

@@ -13,15 +13,27 @@ services:
 
 
   stage4-web:
-    image: php:8.2-apache
+    build: ./challenges/stage4-web
     container_name: nighthawk-stage4-web
     ports:
-      - "8084:80"
-    volumes:
-      - ./challenges/stage4-web/src:/var/www/html
+      - "127.0.0.1:${STAGE4_PORT:-8084}:80"
+    environment:
+      DB_HOST: stage4-db
+      DB_NAME: ${MYSQL_DATABASE:-nighthawk_stage4}
+      DB_USER: ${MYSQL_USER:-portal}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-local_portal_only}
+      STAGE4_FLAG: ${STAGE4_FLAG:-NH{legacy_portal_bypassed}}
+    depends_on:
+      stage4-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "/opt/stage4/healthcheck.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
-      - challenge-net
-      - backend-net
+      - stage4-ingress
+      - stage4-net
     restart: unless-stopped
 
 
@@ -29,12 +41,21 @@ services:
     image: mysql:8.0
     container_name: nighthawk-stage4-db
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local_root_only}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nighthawk_stage4}
+      MYSQL_USER: ${MYSQL_USER:-portal}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-local_portal_only}
+    volumes:
+      - stage4-data:/var/lib/mysql
+      - ./challenges/stage4-web/database/init.sql:/docker-entrypoint-initdb.d/01-stage4.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -h 127.0.0.1 -u $$MYSQL_USER $$MYSQL_DATABASE -e 'SELECT id FROM users LIMIT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     networks:
-      - backend-net
+      - stage4-net
     restart: unless-stopped
 
 
@@ -43,6 +64,13 @@ networks:
   challenge-net:
     driver: bridge
 
-  backend-net:
+  stage4-ingress:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+  stage4-net:
     driver: bridge
     internal: true
+
+volumes:
+  stage4-data:
