@@ -42,6 +42,11 @@ NH{flag_text}
 
 ## Status
 
+Developer and tester action guidelines for **Stages 1, 2, 3, and 4** are in
+[the Stage 1–4 testing guide](docs/testing/stages-1-4.md). It includes preparation,
+walkthrough commands, expected flags and handoff clues, failure checks, and resets.
+This guide contains solutions and is for organizers only.
+
 Stage 4 is implemented. Start it with:
 
 ```bash

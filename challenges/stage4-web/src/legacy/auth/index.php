@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($connection)) {
             // INTENTIONAL CTF VULNERABILITY: input concatenation creates SQL injection.
             // This legacy flow is only for the isolated Stage 4 teaching lab.
-            $sql = "SELECT id, username, role FROM users WHERE username = '$username' AND password = '$password' LIMIT 1";
+            $sql = "SELECT id, username, role FROM users WHERE username = '$username'  AND password = '$password' LIMIT 1";
             try {
                 $user = $connection->query($sql)->fetch_assoc();
                 if ($user) {
