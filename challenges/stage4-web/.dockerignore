@@ -1,8 +1,0 @@
-*
-!Dockerfile
-!apache.conf
-!php.ini
-!src/
-!src/**
-!app/
-!app/**

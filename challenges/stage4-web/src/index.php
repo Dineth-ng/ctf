@@ -1,3 +1,0 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NexaCore Dynamics</title><link rel="stylesheet" href="/assets/style.css"></head>
-<body class="login-page"><main class="login-card"><div class="brand"><span class="brand-mark">N</span> NexaCore <span class="brand-detail">Dynamics</span></div><h1>Operations gateway</h1><p>This service is currently undergoing maintenance. Employees can access their workspace using the address provided in their operations brief.</p><div class="notice">For assistance, contact the internal service desk.</div></main><footer class="login-footer">NexaCore Dynamics · Internal operations</footer></body></html>
