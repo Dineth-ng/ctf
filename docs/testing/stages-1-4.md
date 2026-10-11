@@ -5,15 +5,15 @@ flags. Run commands from the repository root, and use the supplied local lab.
 
 ## Prepare the test environment
 
-Required tools: Docker with Compose, Python 3, curl, ExifTool, and steghide.
-Check that they are available:
+Required on the host: Docker with Compose, Python 3, and curl. The rebuild
+script packages ExifTool and steghide in a small Docker image. For a manual
+solve, run those tools in that image or install them on the test machine.
+Check the host tools:
 
 ```bash
 docker compose version
 python3 --version
 curl --version
-exiftool -ver
-steghide --version
 ```
 
 Docker must be running and your account must have access to its daemon. If Compose
@@ -29,28 +29,21 @@ docker compose ps
 
 Stage 1 uses port 8081; Stage 4 defaults to localhost port 8084. For Stage 4
 overrides, see [its configuration guide](../../challenges/stage4-web/README.md).
-The general `scripts/start.sh`, `stop.sh`, `health-check.sh`, and `reset.sh` files
-are currently empty; use the explicit commands in this guide.
+Use `python scripts/health_check.py` for a cross-platform service check and
+`python scripts/reset_lab.py` to reseed Stage 4 without deleting CTFd scores.
 
 ### Align artifacts before a full chain test
 
-The checked-in Stage 1 conference image currently lacks the intended flag comment.
-The checked-in Stage 2 stego image contains an older note: its flag is
-`NH{ghostbyte_hidden_channel}` and it names `drop-channel.enc`. The current Stage 2
-source instead contains `NH{covert_channel_discovered}` and names `GB-COMM-03`.
-Do not mix these versions when configuring CTFd.
+The original checkout had an untagged Stage 1 image and an older Stage 2 note.
+Rebuild and verify all three artifacts before registering CTFd. Do not mix the
+old Stage 2 image with the current source and flag.
 
-For the current source-based chain, regenerate the artifacts below. These commands
-modify the challenge files; review the resulting Git diff before distributing them.
+Regenerate the artifacts with Docker-provided ExifTool and steghide. This changes
+tracked challenge files; review the resulting Git diff before distributing them.
 
 ```bash
-bash challenges/stage1-osint/generator/generate_stage1.sh
-steghide embed \
-  -cf challenges/stage2-stego/files/research-archive.jpg \
-  -ef challenges/stage2-stego/source/ghostbyte-note.txt \
-  -sf challenges/stage2-stego/files/research-archive-stego.jpg \
-  -p NC-RD-7741 -f
-python3 challenges/stage3-crypto/generator/generate_stage3.py
+python scripts/rebuild_early_artifacts.py
+python tests/early_artifacts_smoke.py
 ```
 
 Despite its filename, `challenges/stage2-stego/generator/generate_stage2.sh`

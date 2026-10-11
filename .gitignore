@@ -36,3 +36,8 @@ uploads/
 
 # Generated evidence
 evidence/logs/*
+
+# Per-installation challenge secrets and generated player evidence
+.organizer/
+challenges/stage5-forensics/files/
+challenges/stage6-vault/generated/

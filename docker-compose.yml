@@ -1,10 +1,72 @@
 services:
 
+  ctfd:
+    image: ctfd/ctfd:3.8.8
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      UPLOAD_FOLDER: /var/uploads
+      LOG_FOLDER: /var/log/CTFd
+      DATABASE_URL: mysql+pymysql://ctfd:${CTFD_DB_PASSWORD:-ctfd_local_only}@ctfd-db/ctfd
+      REDIS_URL: redis://ctfd-cache:6379
+      SECRET_KEY: ${CTFD_SECRET_KEY:-local-lab-change-before-sharing}
+      WORKERS: 1
+      ACCESS_LOG: '-'
+      ERROR_LOG: '-'
+    volumes:
+      - ctfd-uploads:/var/uploads
+      - ctfd-logs:/var/log/CTFd
+    depends_on:
+      ctfd-permissions:
+        condition: service_completed_successfully
+      ctfd-db:
+        condition: service_healthy
+      ctfd-cache:
+        condition: service_started
+    networks:
+      - ctfd-ingress
+      - ctfd-backend
+    restart: unless-stopped
+
+  ctfd-permissions:
+    image: alpine:3.23
+    user: root
+    command: chown -R 1001:1001 /var/uploads /var/log/CTFd
+    volumes:
+      - ctfd-uploads:/var/uploads
+      - ctfd-logs:/var/log/CTFd
+
+  ctfd-db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${CTFD_DB_ROOT_PASSWORD:-ctfd_root_local_only}
+      MARIADB_DATABASE: ctfd
+      MARIADB_USER: ctfd
+      MARIADB_PASSWORD: ${CTFD_DB_PASSWORD:-ctfd_local_only}
+      MARIADB_AUTO_UPGRADE: "1"
+    volumes:
+      - ctfd-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -p$$MARIADB_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks:
+      - ctfd-backend
+    restart: unless-stopped
+
+  ctfd-cache:
+    image: redis:7-alpine
+    networks:
+      - ctfd-backend
+    restart: unless-stopped
+
   stage1-web:
     image: nginx:alpine
     container_name: nighthawk-stage1
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     volumes:
       - ./challenges/stage1-osint/website:/usr/share/nginx/html:ro
     networks:
@@ -58,11 +120,34 @@ services:
       - stage4-net
     restart: unless-stopped
 
+  stage6-vault:
+    profiles: ["vault-container"]
+    build:
+      context: ./challenges/stage6-vault
+      network: host
+    ports:
+      - "127.0.0.1:${STAGE6_PORT:-2226}:22"
+    secrets:
+      - vault_password
+    networks:
+      - stage6-ingress
+    restart: unless-stopped
+
 
 networks:
 
+  ctfd-ingress:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+  ctfd-backend:
+    driver: bridge
+    internal: true
+
   challenge-net:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
 
   stage4-ingress:
     driver: bridge
@@ -71,6 +156,17 @@ networks:
   stage4-net:
     driver: bridge
     internal: true
+  stage6-ingress:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+
+secrets:
+  vault_password:
+    file: ./challenges/stage6-vault/generated/password.txt
 
 volumes:
+  ctfd-uploads:
+  ctfd-logs:
+  ctfd-db-data:
   stage4-data:
