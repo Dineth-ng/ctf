@@ -69,7 +69,7 @@ its own host-only network plan; the Compose ports above listen on **this PC**.
 | 3 Encrypted Correspondence | Base64 and Vigenère decoding | `GB-COMM-03.enc` download in CTFd | 250 |
 | 4 Backdoor Portal | Investigate a vulnerable login | Stage 4 web site | 300 |
 | 5A Exfiltration Trace | Follow HTTP traffic and reconstruct a message | PCAP download in CTFd | 350 |
-| 5B Deleted Evidence | Recover a deleted FAT12 text file | disk image download in CTFd | 400 |
+| 5B Deleted Evidence | Recover a deleted ZIP from a FAT12 image | disk image download in CTFd | 400 |
 | 6 Prometheus Vault | Use a Linux shell and inspect a small binary | dedicated Ubuntu VM; optional container rehearsal | 500 |
 
 Stage 5A and 5B are two scored challenges inside the proposed Stage 5. Together
@@ -92,7 +92,8 @@ one is solved. Details: [architecture and design decisions](docs/architecture/as
 CTFd submissions stay valid. To stop containers without deleting their data,
 use `docker compose stop`. To restore Stage 4 users and clear sessions, run
 `python scripts/reset_lab.py`. To regenerate Stage 5 downloads, rerun
-`python scripts/build_lab.py` and upload the new files to CTFd if they changed.
+`python scripts/build_lab.py`, then rerun `python scripts/register_ctfd.py`;
+the registration helper replaces a same-named attachment only if its bytes changed.
 Never use `docker compose down -v` unless you intentionally want to delete the
 scoreboard and challenge databases.
 

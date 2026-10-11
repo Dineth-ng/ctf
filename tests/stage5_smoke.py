@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
+import struct
+import zipfile
 from pathlib import Path
 
 
@@ -25,7 +28,23 @@ def main() -> None:
     assert manifest["stage5b_flag"] in disk
     assert manifest["vault_code_b"] in disk
     assert manifest["vault_password"] in disk
-    assert b"NH{" not in (files / "NH-048-disk.img").read_bytes(), "raw disk leaks a flag"
+    disk_bytes = (files / "NH-048-disk.img").read_bytes()
+    assert b"NH{" not in disk_bytes, "raw disk leaks a flag"
+
+    # Verify that rebuilding produces stable reset files. The deleted archive
+    # is stored in FAT12 cluster 2, the first data cluster in this image.
+    bytes_per_sector = struct.unpack_from("<H", disk_bytes, 11)[0]
+    reserved = struct.unpack_from("<H", disk_bytes, 14)[0]
+    fats = disk_bytes[16]
+    root_entries = struct.unpack_from("<H", disk_bytes, 17)[0]
+    sectors_per_fat = struct.unpack_from("<H", disk_bytes, 22)[0]
+    root = (reserved + fats * sectors_per_fat) * bytes_per_sector
+    root_sectors = (root_entries * 32 + bytes_per_sector - 1) // bytes_per_sector
+    data_start = root + root_sectors * bytes_per_sector
+    deleted_entry = disk_bytes[root + 32:root + 64]
+    archive_size = struct.unpack_from("<I", deleted_entry, 28)[0]
+    with zipfile.ZipFile(io.BytesIO(disk_bytes[data_start:data_start + archive_size])) as archive:
+        assert archive.getinfo("evidence.txt").date_time == (2026, 1, 1, 0, 0, 0)
     print("Stage 5 network and deleted-disk checks passed.")
 
 

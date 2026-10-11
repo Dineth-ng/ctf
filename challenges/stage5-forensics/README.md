@@ -16,7 +16,9 @@ From the repository root, run `python scripts/build_lab.py`. It creates:
 Upload the two evidence files to the matching CTFd challenges via
 `python scripts/register_ctfd.py`. Do not upload the private manifest or this
 source/generator folder. The same build command may be rerun without changing
-the flags. Do not regenerate the manifest after registering challenges.
+the flags or evidence-file checksums. Rerun the registration command after a
+deliberate evidence change so CTFd replaces a stale same-named attachment. Do
+not regenerate the manifest after registering challenges.
 
 ## What a player discovers
 

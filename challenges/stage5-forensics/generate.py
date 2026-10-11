@@ -124,7 +124,13 @@ def make_fat12(secrets: dict[str, str]) -> bytes:
     ).encode()
     archive = io.BytesIO()
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as zip_output:
-        zip_output.writestr("evidence.txt", note)
+        # A normal ZipInfo uses the current clock time. That made the disk image
+        # change on every rebuild even though the challenge answers stayed the
+        # same. Keep the metadata fixed so reset/recovery is reproducible.
+        evidence_info = zipfile.ZipInfo("evidence.txt", date_time=(2026, 1, 1, 0, 0, 0))
+        evidence_info.compress_type = zipfile.ZIP_DEFLATED
+        evidence_info.external_attr = 0o644 << 16
+        zip_output.writestr(evidence_info, note)
     deleted_file = archive.getvalue()
     if len(deleted_file) > 512:
         raise ValueError("The deleted archive must fit in one disk cluster")

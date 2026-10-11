@@ -6,6 +6,7 @@ the script refuses to silently replace an existing, different flag.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import secrets
@@ -66,6 +67,17 @@ def multipart_upload(challenge_id: int, path: Path) -> None:
     parts.append(f"\r\n--{boundary}--\r\n".encode())
     request("POST", "files", raw=b"".join(parts),
             content_type=f"multipart/form-data; boundary={boundary}")
+
+
+def downloaded_file(location: str) -> bytes:
+    """Download one CTFd attachment so stale same-named files are detected."""
+    safe_location = urllib.parse.quote(location.lstrip("/"), safe="/")
+    download = urllib.request.Request(
+        BASE + "/files/" + safe_location,
+        headers={"Authorization": "Token " + TOKEN},
+    )
+    with urllib.request.urlopen(download, timeout=30) as response:
+        return response.read()
 
 
 def main() -> None:
@@ -165,9 +177,26 @@ def main() -> None:
             if not artifact.is_file():
                 raise FileNotFoundError(artifact)
             files = request("GET", f"challenges/{challenge_id}/files")
-            if not any(Path(item["location"]).name == artifact.name for item in files):
+            matches = [
+                item for item in files
+                if Path(item["location"]).name == artifact.name
+            ]
+            if len(matches) > 1:
+                raise RuntimeError(
+                    f"{name} has duplicate copies of {artifact.name}; review them in CTFd."
+                )
+            if not matches:
                 multipart_upload(challenge_id, artifact)
                 print(f"  Uploaded {artifact.name}")
+            else:
+                local_digest = hashlib.sha256(artifact.read_bytes()).digest()
+                remote_digest = hashlib.sha256(
+                    downloaded_file(matches[0]["location"])
+                ).digest()
+                if local_digest != remote_digest:
+                    request("DELETE", f"files/{matches[0]['id']}")
+                    multipart_upload(challenge_id, artifact)
+                    print(f"  Replaced stale {artifact.name}")
         previous_id = challenge_id
     print("Registration finished. Check the player view and test correct and incorrect submissions.")
 
