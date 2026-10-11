@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:8.1-apache
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    command: >
+      bash -c "docker-php-ext-install mysqli && apache2-foreground"
+
+  db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsecretpass
+      MYSQL_DATABASE: portal_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
