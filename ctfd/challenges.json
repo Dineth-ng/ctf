@@ -1,0 +1,69 @@
+[
+  [
+    "The Digital Footprint",
+    "OSINT",
+    100,
+    "NH{exif_m3t4d4t4_tr4ck3d}",
+    "GhostByte defaced NexaCore Dynamics. Investigate the team roster and the image metadata to recover the first trace.",
+    "http://localhost/",
+    "Images can carry information beyond their visible pixels. Investigate EXIF metadata.",
+    []
+  ],
+  [
+    "The Hidden Message",
+    "Steganography",
+    100,
+    "NH{st3g0_gh0st_unh1dd3n}",
+    "Analyze the trophy image from the defaced website. Recover the hidden message. The payload has a four-byte big-endian length prefix followed by UTF-8 text.",
+    "http://localhost/trophy.png",
+    "Inspect the least significant bit of each RGB channel in row order.",
+    [
+      "trophy.png"
+    ]
+  ],
+  [
+    "Encrypted Correspondence",
+    "Cryptography",
+    200,
+    "NH{v1g3n3r3_c1ph3r_cr4ck3d}",
+    "Decode the intercepted chat. Identify the outer encoding and classical cipher. The stolen project name is a useful clue. The message leads to the shadow portal.",
+    "",
+    "Decode Base64 first. Then consider Vigenere and the project name PROMETHEUS.",
+    [
+      "chat_log.txt"
+    ]
+  ],
+  [
+    "The Backdoor Portal",
+    "Web Security",
+    200,
+    "NH{sqli_4dm1n_p0rt4l_byp4ss}",
+    "Investigate the shadow portal revealed by the correspondence. Examine its authentication request and recover the dashboard token. Use only this local lab target.",
+    "http://localhost:8080/",
+    "The username is inserted into an SQL query. Consider quote termination and a comment.",
+    []
+  ],
+  [
+    "Tracing the Exfiltration",
+    "Forensics",
+    300,
+    "NH{pcap_ftp_tr4ff1c_4nd_d1sk_r3c0v3ry}",
+    "Correlate the captured FTP traffic and recovered disk image. Each evidence file contains part of the token. Combine them in order, and recover the storage-node credentials.",
+    "",
+    "Follow the FTP stream; inspect residual disk strings for SUBFLAG_2 and the SSH credentials.",
+    [
+      "exfil.pcap",
+      "disk.img"
+    ]
+  ],
+  [
+    "The Prometheus Vault",
+    "Reverse Engineering / PrivEsc",
+    400,
+    "NH{pr0m3th3us_c0r3_s4f3gu4rd3d}",
+    "Use the credentials recovered from disk evidence to enter the storage node. Enumerate sudo permissions, reach the protected vault, and inspect its ELF binary to recover the encrypted final token.",
+    "ssh -p 2222 runner@localhost",
+    "Check sudo -l. The vault binary uses a single-byte XOR operation.",
+    []
+  ]
+]

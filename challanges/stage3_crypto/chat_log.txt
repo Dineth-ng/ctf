@@ -1,9 +1,0 @@
-=== INTERCEPTED GHOSTBYTE ENCRYPTED TRANSMISSION ===
-Source: Relay node #07 (Encrypted C2 Channel)
-Protocol: Layered B64 + Polyalphabetic Cipher
-Hint: Attackers bragged that their encryption key relates directly to the stolen project codename.
-
-CIPHERTEXT PAYLOAD:
-VnljZXgwMTogTG9leGdsLVpIIG1oZnByIGpnZ2tveCBldmFtcHcgcGsgdmZ4aTovLzxBRUxZVEtfVkFXTT46ODA4MC8KTmxpa2kwMjogVGN6amJ5cXl2LiBVcnp4ZnRqbyBsZ2RrIHFkaXdscm5hcGNnIGVpbSBhcyAndXZiemInIC8gJ1NsaHp4SWhoR29ldzIwMjYhJy4KWm9zbWwwMTogSEhaIHVyY2xnbmFkZSBwa3R0encgY2sgcGNnYSBzaWxyIGlmIGl5cyBnd3h5IHR1anBkc2ZpayBwaiBzZ2ogY2NlaSBpaHdtb2Rpci4KU2xoengwMjogWmRweCBqcXZibW13c2l6Y3ogeGhyaWg6IEZXe20xdTN6M3YzX3Yxd2wzbF91ZzR0eTNwfQpLYXZ3bjAxOiBWZCBlY2Ygd2FodnkgbHd6ZyB3aXIgZG1ueiBpeXMgeXNlbC4=
-
-=== END TRANSMISSION ===

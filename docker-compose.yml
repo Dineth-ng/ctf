@@ -1,109 +1,181 @@
-version: '3.8'
+name: nighthawk-member1
 
-networks:
-  nighthawk_net:
-    driver: bridge
+x-defaults: &defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+  pids_limit: 256
 
 services:
-  # CTFd Scoreboard Engine
-  ctfd:
-    image: ctfd/ctfd:3.6.1
-    user: root
-    restart: always
+  gateway:
+    <<: *defaults
+    image: nginx:alpine
+    user: '101:101'
+    entrypoint: ['nginx', '-g', 'daemon off;']
     ports:
-      - "8000:8000"
+      - '127.0.0.1:8000:8000'
+      - '127.0.0.1:80:8081'
+      - '127.0.0.1:8080:8084'
+      - '127.0.0.1:2222:2222'
+    volumes: ['./gateway/nginx.conf:/etc/nginx/nginx.conf:ro']
+    tmpfs: ['/tmp']
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 128m
+    networks: [edge, platform_front, osint, web_front, vault]
+    depends_on:
+      ctfd: {condition: service_healthy}
+      stage1_2_web: {condition: service_healthy}
+      stage4_web: {condition: service_healthy}
+      stage6_vault: {condition: service_healthy}
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8000/healthcheck']
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  ctfd:
+    <<: *defaults
+    image: ctfd/ctfd:3.8.8
+    user: '1001:1001'
     environment:
-      - UPLOAD_FOLDER=/var/uploads
-      - DATABASE_URL=mysql+pymysql://ctfd:ctfd_pass@ctfd_db/ctfd
-      - REDIS_URL=redis://ctfd_cache:6379
-      - WORKERS=1
-      - LOG_FOLDER=/var/log/CTFd
-      - ACCESS_LOG=-
-      - ERROR_LOG=-
-      - REVERSE_PROXY=false
+      SECRET_KEY: ${CTFD_SECRET_KEY:?Run scripts/deploy.sh first}
+      DATABASE_URL: mysql+pymysql://ctfd:${CTFD_DB_PASSWORD:?required}@ctfd_db/ctfd
+      REDIS_URL: redis://ctfd_cache:6379
+      UPLOAD_FOLDER: /var/uploads
+      LOG_FOLDER: /var/log/CTFd
+      WORKERS: '2'
+      ACCESS_LOG: '-'
+      ERROR_LOG: '-'
+      REVERSE_PROXY: 'false'
     volumes:
+      - ./ctfd/challenges.json:/srv/config/challenges.json:ro
       - ctfd_uploads:/var/uploads
       - ctfd_logs:/var/log/CTFd
+      - ./stage2_stego/trophy.png:/srv/artifacts/trophy.png:ro
+      - ./stage3_crypto/chat_log.txt:/srv/artifacts/chat_log.txt:ro
+      - ./stage5_forensics/exfil.pcap:/srv/artifacts/exfil.pcap:ro
+      - ./stage5_forensics/disk.img:/srv/artifacts/disk.img:ro
     depends_on:
-      - ctfd_db
-      - ctfd_cache
-    networks:
-      - nighthawk_net
+      ctfd_db: {condition: service_healthy}
+      ctfd_cache: {condition: service_healthy}
+    networks: [platform, platform_front]
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 768m
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthcheck', timeout=5)"]
+      interval: 15s
+      timeout: 8s
+      retries: 20
+      start_period: 60s
 
   ctfd_db:
-    image: mariadb:10.5
-    restart: always
+    <<: *defaults
+    image: mariadb:10.11
     environment:
-      - MYSQL_ROOT_PASSWORD=ctfd_root_secret
-      - MYSQL_USER=ctfd
-      - MYSQL_PASSWORD=ctfd_pass
-      - MYSQL_DATABASE=ctfd
-    volumes:
-      - ctfd_db_data:/var/lib/mysql
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
-    networks:
-      - nighthawk_net
+      MARIADB_ROOT_PASSWORD: ${CTFD_DB_ROOT_PASSWORD:?required}
+      MARIADB_USER: ctfd
+      MARIADB_PASSWORD: ${CTFD_DB_PASSWORD:?required}
+      MARIADB_DATABASE: ctfd
+    volumes: ['ctfd_db_data:/var/lib/mysql']
+    networks: [platform]
+    mem_limit: 512m
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   ctfd_cache:
-    image: redis:6-alpine
-    restart: always
-    volumes:
-      - ctfd_redis_data:/data
-    networks:
-      - nighthawk_net
+    <<: *defaults
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory', '128mb', '--maxmemory-policy', 'allkeys-lru']
+    volumes: ['ctfd_redis_data:/data']
+    networks: [platform]
+    mem_limit: 192m
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
-  # Stage 1 & 2: Static Defaced Portal & OSINT/Stego Target
   stage1_2_web:
-    build:
-      context: ./stage1_osint
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "80:80"
-    networks:
-      - nighthawk_net
+    <<: *defaults
+    build: ./stage1_osint
+    networks: [osint]
+    mem_limit: 128m
+    security_opt: ['no-new-privileges:true']
+    read_only: true
+    tmpfs: ['/var/cache/nginx', '/var/run', '/tmp']
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/']
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
-  # Stage 4: Vulnerable C2 Backdoor Web Application
   stage4_web:
-    image: php:8.1-apache
-    restart: always
-    ports:
-      - "8080:80"
-    volumes:
-      - ./stage4_web/src:/var/www/html
+    <<: *defaults
+    build: ./stage4_web
+    networks: [web_challenge, web_front]
     depends_on:
-      - stage4_db
-    command: >
-      bash -c "docker-php-ext-install mysqli && apache2-foreground"
-    networks:
-      - nighthawk_net
+      stage4_db: {condition: service_healthy}
+    mem_limit: 256m
+    security_opt: ['no-new-privileges:true']
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1/']
+      interval: 10s
+      timeout: 5s
+      retries: 15
 
   stage4_db:
-    image: mariadb:10.5
-    restart: always
+    <<: *defaults
+    image: mariadb:10.11
     environment:
-      MYSQL_ROOT_PASSWORD: rootsecretpass
-      MYSQL_DATABASE: portal_db
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppass
+      MARIADB_ROOT_PASSWORD: ${STAGE4_DB_ROOT_PASSWORD:?required}
+      MARIADB_DATABASE: portal_db
+      MARIADB_USER: appuser
+      MARIADB_PASSWORD: apppass
     volumes:
-      - ./stage4_web/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - nighthawk_net
+      - ./stage4_web/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - stage4_db_data:/var/lib/mysql
+    networks: [web_challenge]
+    mem_limit: 384m
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
-  # Stage 6: Hardened Ubuntu Vault Server (SSH Target)
   stage6_vault:
-    build:
-      context: ./stage6_vault
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "2222:22"
-    networks:
-      - nighthawk_net
+    <<: *defaults
+    build: ./stage6_vault
+    networks: [vault]
+    mem_limit: 256m
+    # Root inside this lab container is the intended challenge objective.
+    # No host mounts, Docker socket, host network, or privileged mode.
+    healthcheck:
+      test: ['CMD-SHELL', 'test -s /var/run/sshd.pid && kill -0 $(cat /var/run/sshd.pid)']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+networks:
+  edge: {driver: bridge}
+  platform_front: {driver: bridge, internal: true}
+  web_front: {driver: bridge, internal: true}
+  platform: {driver: bridge, internal: true}
+  osint: {driver: bridge, internal: true}
+  web_challenge: {driver: bridge, internal: true}
+  vault: {driver: bridge, internal: true}
 
 volumes:
   ctfd_uploads:
   ctfd_logs:
   ctfd_db_data:
   ctfd_redis_data:
+  stage4_db_data:

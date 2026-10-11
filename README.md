@@ -20,7 +20,11 @@ GhostByte has compromised NexaCore Dynamics and stolen Project Prometheus. Playe
 Requirements: Linux, Docker Engine, Docker Compose v2 or later, Python 3, and a working Internet connection for the first image download/build. The tested host uses Docker Engine 26.1.5 and Compose 5.6.0. Docker access is required for the current user. Plan for about 4 GB of available RAM and 10 GB of disk space; actual usage is shown with `docker stats`.
 
 ```bash
+<<<<<<< HEAD
 cd /home/dineth/Desktop/operation_nighthawk
+=======
+cd /path/to/operation_nighthawk
+>>>>>>> 6aae6dc (remaster)
 ./scripts/deploy.sh
 ```
 
@@ -40,6 +44,7 @@ The deployer generates `.env` once, builds the challenge images, waits for healt
 
 All published connections bind to `127.0.0.1`. Open the browser on the same computer as Docker. A different laptop cannot connect using its own `localhost`.
 
+<<<<<<< HEAD
 ## Manual deployment
 
 ```bash
@@ -55,6 +60,42 @@ Use the root Compose file. The Compose files under `ctfd/` and `stage4_web/` are
 
 ## Play the investigation
 
+=======
+## Set up a shared copy on a new computer
+
+Sharing the project folder shares the source files, not the Docker database or CTFd setup state. Each computer gets its own database volumes. On a fresh computer, run the project deploy script once from the project folder so it creates local secrets, starts the services, and loads the custom homepage and six challenges:
+
+```bash
+cd /path/to/operation_nighthawk
+./scripts/deploy.sh
+```
+
+Then open http://localhost:8000. The first-run CTFd setup page should be replaced by the Operation NightHawk homepage. The new computer's private admin login is saved in `.local/admin-credentials.txt`. Do not copy another computer's `.env` or Docker database volumes.
+
+If the containers are already running and CTFd still shows its setup page, run the bootstrap step from the project folder:
+
+```bash
+python3 scripts/setup_ctfd.py
+```
+
+This uses the local `.env` values and configures the homepage, admin, flags, challenge order, hints, and downloadable evidence. If `.env` does not exist, run `./scripts/deploy.sh` instead; it generates the settings first.
+
+## Manual deployment
+
+```bash
+python3 scripts/init_env.py
+docker compose up -d --build --wait --wait-timeout 240
+python3 scripts/setup_ctfd.py
+docker compose ps
+```
+
+The last Python command performs the admin and challenge setup automatically. To configure a completely new instance by hand instead, omit that command and visit `/setup`; use the CTFd admin interface to enter the six challenge records from `ctfd/challenges.json`. An already configured instance opens the home page instead of the setup wizard.
+
+Use the root Compose file. The Compose files under `ctfd/` and `stage4_web/` are compatibility entry points that include this same full project.
+
+## Play the investigation
+
+>>>>>>> 6aae6dc (remaster)
 1. Open http://localhost:8000/register in an incognito window.
 2. Register a separate player account; use your admin account only for administration.
 3. Open **Challenges**, then **1. The Digital Footprint**.
@@ -167,7 +208,13 @@ docker network ls --filter name=nighthawk-member1
 
 | Symptom | Check |
 |---|---|
+<<<<<<< HEAD
 | Port already in use | Stop the old NightHawk deployment that owns ports 80, 8000, 8080, or 2222. Do not remove unrelated Docker projects. |
+=======
+| Port already in use | `scripts/preflight.sh` reports which Docker container has a required port. Stop only the old lab container that owns it, then rerun `./scripts/deploy.sh`. For a host process, inspect it with the shown `ss` command. |
+| CTFd shows the first-run setup page | From the project folder run `./scripts/deploy.sh`; if containers are already running and `.env` exists, run `python3 scripts/setup_ctfd.py`. |
+| Teammate sees an empty CTFd | Each computer has separate Docker database volumes. Run `./scripts/deploy.sh` on that computer to configure its local instance. |
+>>>>>>> 6aae6dc (remaster)
 | CTFd does not open | Check gateway and CTFd health and logs; use `http://localhost:8000`. |
 | Only Stage 1 can be opened | Expected for a new player; solve it to unlock Stage 2. |
 | Portal reports a database problem | Check `stage4_db` health. PHP connects to `stage4_db`, not the CTFd database. |
@@ -178,9 +225,16 @@ docker network ls --filter name=nighthawk-member1
 
 ```text
 ctfd/challenges.json             Canonical challenge descriptions, flags, hints, and files
+<<<<<<< HEAD
  docker-compose.yml              All services, networks, volumes, and health checks
  gateway/nginx.conf              Local HTTP and SSH routing
  scripts/deploy.sh               Repeatable deployment
+=======
+docker-compose.yml               All services, networks, volumes, and health checks
+ gateway/nginx.conf              Local HTTP and SSH routing
+ scripts/deploy.sh               Repeatable deployment
+ scripts/preflight.sh            Host port conflict check
+>>>>>>> 6aae6dc (remaster)
  scripts/init_env.py             Initial secret generation
  scripts/setup_ctfd.py           Host-side bootstrap runner
  scripts/bootstrap_ctfd.py       CTFd configuration and artifact synchronization

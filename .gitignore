@@ -1,0 +1,17 @@
+# Per-machine credentials and CTF state
+.env
+.env.*
+!.env.example
+.local/
+
+# Local test/build output
+evidence/*.json
+evidence/*.log
+__pycache__/
+*.py[cod]
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
