@@ -1,0 +1,43 @@
+PASS Admin login
+PASS All six configured challenges
+PASS Player registration
+PASS Stage 2 rejects submissions before Stage 1 is solved
+PASS Stage 4 dashboard requires a session
+PASS SSH starts as a low privilege user; vault is protected
+PASS Stage 1: recovered flag equals canonical flag
+PASS Stage 1: description does not reveal answer
+PASS Stage 1: wrong flag rejected
+PASS Stage 1: correct flag accepted
+PASS Stage 2: recovered flag equals canonical flag
+PASS Stage 2: description does not reveal answer
+PASS Stage 2: evidence download works
+PASS CTFd and web stego images match
+PASS Stage 2: wrong flag rejected
+PASS Stage 2: correct flag accepted
+PASS Stage 3: recovered flag equals canonical flag
+PASS Stage 3: description does not reveal answer
+PASS Stage 3: evidence download works
+PASS Stage 3: uploaded evidence matches source
+PASS Stage 3: wrong flag rejected
+PASS Stage 3: correct flag accepted
+PASS Stage 4: recovered flag equals canonical flag
+PASS Stage 4: description does not reveal answer
+PASS Stage 4: wrong flag rejected
+PASS Stage 4: correct flag accepted
+PASS Stage 5: recovered flag equals canonical flag
+PASS Stage 5: description does not reveal answer
+PASS Stage 5: evidence download works
+PASS Stage 5: uploaded evidence matches source
+PASS Stage 5: evidence download works
+PASS Stage 5: uploaded evidence matches source
+PASS Stage 5: wrong flag rejected
+PASS Stage 5: correct flag accepted
+PASS Stage 6: recovered flag equals canonical flag
+PASS Stage 6: description does not reveal answer
+PASS Stage 6: wrong flag rejected
+PASS Stage 6: correct flag accepted
+PASS Player score totals 1300 points
+PASS Duplicate solve does not award more points
+FAIL All eight services healthy
+VALIDATION FAILED: All eight services healthy
+PASS Temporary validation account removed

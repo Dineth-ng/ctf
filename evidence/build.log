@@ -1,0 +1,181 @@
+Using existing .env; secrets preserved.
+ Image nighthawk-member1-stage1_2_web Building 
+ Image nighthawk-member1-stage6_vault Building 
+ Image nighthawk-member1-stage4_web Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.62kB done
+#1 DONE 0.0s
+
+#2 [stage1_2_web internal] load build definition from Dockerfile
+#2 transferring dockerfile: 151B done
+#2 DONE 0.0s
+
+#3 [stage1_2_web internal] load metadata for docker.io/library/nginx:alpine
+#3 DONE 0.0s
+
+#4 [stage6_vault internal] load build definition from Dockerfile
+#4 transferring dockerfile: 773B done
+#4 DONE 0.0s
+
+#5 [stage1_2_web internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [stage1_2_web 1/2] FROM docker.io/library/nginx:alpine
+#6 DONE 0.0s
+
+#7 [stage1_2_web internal] load build context
+#7 transferring context: 155B done
+#7 DONE 0.0s
+
+#8 [stage1_2_web 2/2] COPY index.html team.html employee.jpg trophy.png pastebin.txt /usr/share/nginx/html/
+#8 CACHED
+
+#9 [stage1_2_web] exporting to image
+#9 exporting layers done
+#9 writing image sha256:c42501bd7ad68fbc5e3e6dafc82bf6132d158fb6c257b5cab241d3430455d967 done
+#9 naming to docker.io/library/nighthawk-member1-stage1_2_web done
+#9 DONE 0.0s
+
+#10 [stage6_vault internal] load metadata for docker.io/library/ubuntu:22.04
+#10 ...
+
+#11 [stage4_web internal] load build definition from Dockerfile
+#11 transferring dockerfile: 126B done
+#11 DONE 0.0s
+
+#12 [stage4_web internal] load metadata for docker.io/library/php:8.2-apache
+#12 DONE 0.0s
+
+#13 [stage4_web internal] load .dockerignore
+#13 transferring context: 2B done
+#13 DONE 0.0s
+
+#14 [stage4_web 1/3] FROM docker.io/library/php:8.2-apache
+#14 DONE 0.0s
+
+#15 [stage4_web internal] load build context
+#15 transferring context: 128B done
+#15 DONE 0.0s
+
+#16 [stage4_web 2/3] RUN docker-php-ext-install mysqli
+#16 CACHED
+
+#17 [stage4_web 3/3] COPY src/ /var/www/html/
+#17 CACHED
+
+#18 [stage4_web] exporting to image
+#18 exporting layers done
+#18 writing image sha256:0cb18cc08a49ae0056b9b3991670da4778d32fb3ed39ae2159d9c81ef699e811 done
+#18 naming to docker.io/library/nighthawk-member1-stage4_web done
+#18 DONE 0.0s
+
+#19 [stage4_web] resolving provenance for metadata file
+#19 DONE 0.0s
+
+#20 [stage1_2_web] resolving provenance for metadata file
+#20 DONE 0.0s
+
+#10 [stage6_vault internal] load metadata for docker.io/library/ubuntu:22.04
+#10 DONE 1.4s
+
+#21 [stage6_vault internal] load .dockerignore
+#21 transferring context: 2B done
+#21 DONE 0.0s
+
+#22 [stage6_vault 1/9] FROM docker.io/library/ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401
+#22 DONE 0.0s
+
+#23 [stage6_vault internal] load build context
+#23 transferring context: 68B done
+#23 DONE 0.0s
+
+#24 [stage6_vault 5/9] COPY vault_lock.c /tmp/vault_lock.c
+#24 CACHED
+
+#25 [stage6_vault 3/9] RUN mkdir /var/run/sshd
+#25 CACHED
+
+#26 [stage6_vault 4/9] RUN mkdir -p /opt/vault
+#26 CACHED
+
+#27 [stage6_vault 8/9] RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+#27 CACHED
+
+#28 [stage6_vault 7/9] RUN bash /tmp/setup_vault.sh && rm /tmp/setup_vault.sh
+#28 CACHED
+
+#29 [stage6_vault 2/9] RUN apt-get update && apt-get install -y     openssh-server     sudo     python3     gcc     make     binutils     gdb     file     vim     nano     net-tools     curl     && rm -rf /var/lib/apt/lists/*
+#29 CACHED
+
+#30 [stage6_vault 6/9] COPY setup_vault.sh /tmp/setup_vault.sh
+#30 CACHED
+
+#31 [stage6_vault 9/9] RUN sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+#31 CACHED
+
+#32 [stage6_vault] exporting to image
+#32 exporting layers done
+#32 writing image sha256:29fe24d5e5a73cd417ddfcee583f8c3343dae2751ce21a9c68ab6a684bfa22db done
+#32 naming to docker.io/library/nighthawk-member1-stage6_vault done
+#32 DONE 0.0s
+
+#33 [stage6_vault] resolving provenance for metadata file
+#33 DONE 0.0s
+ Image nighthawk-member1-stage1_2_web Built 
+ Image nighthawk-member1-stage4_web Built 
+ Image nighthawk-member1-stage6_vault Built 
+ Container nighthawk-member1-stage6_vault-1 Running 
+ Container nighthawk-member1-ctfd_cache-1 Running 
+ Container nighthawk-member1-stage4_web-1 Running 
+ Container nighthawk-member1-gateway-1 Running 
+ Container nighthawk-member1-ctfd_db-1 Running 
+ Container nighthawk-member1-stage1_2_web-1 Running 
+ Container nighthawk-member1-stage4_db-1 Running 
+ Container nighthawk-member1-ctfd-1 Recreate 
+ Container nighthawk-member1-ctfd-1 Recreated 
+ Container nighthawk-member1-ctfd_db-1 Waiting 
+ Container nighthawk-member1-ctfd_cache-1 Waiting 
+ Container nighthawk-member1-stage4_db-1 Waiting 
+ Container nighthawk-member1-stage4_db-1 Healthy 
+ Container nighthawk-member1-ctfd_cache-1 Healthy 
+ Container nighthawk-member1-ctfd_db-1 Healthy 
+ Container nighthawk-member1-ctfd-1 Starting 
+ Container nighthawk-member1-ctfd-1 Started 
+ Container nighthawk-member1-ctfd-1 Waiting 
+ Container nighthawk-member1-stage1_2_web-1 Waiting 
+ Container nighthawk-member1-stage4_web-1 Waiting 
+ Container nighthawk-member1-stage6_vault-1 Waiting 
+ Container nighthawk-member1-stage1_2_web-1 Healthy 
+ Container nighthawk-member1-stage6_vault-1 Healthy 
+ Container nighthawk-member1-stage4_web-1 Healthy 
+ Container nighthawk-member1-ctfd-1 Healthy 
+ Container nighthawk-member1-gateway-1 Waiting 
+ Container nighthawk-member1-stage6_vault-1 Waiting 
+ Container nighthawk-member1-ctfd-1 Waiting 
+ Container nighthawk-member1-ctfd_cache-1 Waiting 
+ Container nighthawk-member1-stage4_db-1 Waiting 
+ Container nighthawk-member1-ctfd_db-1 Waiting 
+ Container nighthawk-member1-stage1_2_web-1 Waiting 
+ Container nighthawk-member1-stage4_web-1 Waiting 
+ Container nighthawk-member1-stage4_db-1 Healthy 
+ Container nighthawk-member1-ctfd_db-1 Healthy 
+ Container nighthawk-member1-ctfd_cache-1 Healthy 
+ Container nighthawk-member1-stage1_2_web-1 Healthy 
+ Container nighthawk-member1-ctfd-1 Healthy 
+ Container nighthawk-member1-stage6_vault-1 Healthy 
+ Container nighthawk-member1-stage4_web-1 Healthy 
+ Container nighthawk-member1-gateway-1 Healthy 
+INFO  [alembic.runtime.migration] Context impl MySQLImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Context impl MySQLImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+ * Loaded module, <module 'CTFd.plugins.challenges' from '/opt/CTFd/CTFd/plugins/challenges/__init__.py'>
+ * Loaded module, <module 'CTFd.plugins.dynamic_challenges' from '/opt/CTFd/CTFd/plugins/dynamic_challenges/__init__.py'>
+ * Loaded module, <module 'CTFd.plugins.flags' from '/opt/CTFd/CTFd/plugins/flags/__init__.py'>
+CTFd configured: admin, six challenges, exact flags, hints, prerequisites, and four evidence files.
+Admin credentials saved privately in .local/admin-credentials.txt
+
+CTFd: http://localhost:8000 | Admin: http://localhost:8000/admin
+Credentials: .local/admin-credentials.txt
+OSINT: http://localhost | Portal: http://localhost:8080 | SSH: localhost:2222

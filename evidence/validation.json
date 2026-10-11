@@ -1,0 +1,274 @@
+{
+  "time": "2026-10-11T20:56:00.915488+05:30",
+  "checks": [
+    {
+      "check": "Admin login",
+      "passed": true
+    },
+    {
+      "check": "All six configured challenges",
+      "passed": true
+    },
+    {
+      "check": "Player registration",
+      "passed": true
+    },
+    {
+      "check": "Stage 2 rejects submissions before Stage 1 is solved",
+      "passed": true
+    },
+    {
+      "check": "Stage 4 dashboard requires a session",
+      "passed": true
+    },
+    {
+      "check": "SSH starts as a low privilege user; vault is protected",
+      "passed": true
+    },
+    {
+      "check": "Stage 1: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 1: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 1: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 1: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Stage 2: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 2: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 2: evidence download works",
+      "passed": true
+    },
+    {
+      "check": "CTFd and web stego images match",
+      "passed": true
+    },
+    {
+      "check": "Stage 2: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 2: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: evidence download works",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: uploaded evidence matches source",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 3: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Stage 4: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 4: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 4: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 4: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: evidence download works",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: uploaded evidence matches source",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: evidence download works",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: uploaded evidence matches source",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 5: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Stage 6: recovered flag equals canonical flag",
+      "passed": true
+    },
+    {
+      "check": "Stage 6: description does not reveal answer",
+      "passed": true
+    },
+    {
+      "check": "Stage 6: wrong flag rejected",
+      "passed": true
+    },
+    {
+      "check": "Stage 6: correct flag accepted",
+      "passed": true
+    },
+    {
+      "check": "Player score totals 1300 points",
+      "passed": true
+    },
+    {
+      "check": "Duplicate solve does not award more points",
+      "passed": true
+    },
+    {
+      "check": "All eight services healthy",
+      "passed": true
+    },
+    {
+      "check": "No privileged containers",
+      "passed": true
+    },
+    {
+      "check": "CTFd runs as non-root",
+      "passed": true
+    },
+    {
+      "check": "ctfd: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "ctfd: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "ctfd_cache: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "ctfd_cache: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "ctfd_db: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "ctfd_db: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "Gateway ports are bound to localhost",
+      "passed": true
+    },
+    {
+      "check": "gateway: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "stage1_2_web: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "stage1_2_web: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "stage4_db: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "stage4_db: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "stage4_web: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "stage4_web: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "stage6_vault: no direct published ports",
+      "passed": true
+    },
+    {
+      "check": "stage6_vault: no Docker socket mount",
+      "passed": true
+    },
+    {
+      "check": "platform: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "platform_front: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "web_front: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "web_challenge: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "osint: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "vault: internal Docker network",
+      "passed": true
+    },
+    {
+      "check": "Vault cannot connect directly to CTFd database",
+      "passed": true
+    },
+    {
+      "check": "Temporary validation account removed",
+      "passed": true
+    }
+  ],
+  "passed": true
+}
