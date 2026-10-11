@@ -1,0 +1,109 @@
+version: '3.8'
+
+networks:
+  nighthawk_net:
+    driver: bridge
+
+services:
+  # CTFd Scoreboard Engine
+  ctfd:
+    image: ctfd/ctfd:3.6.1
+    user: root
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_FOLDER=/var/uploads
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd_pass@ctfd_db/ctfd
+      - REDIS_URL=redis://ctfd_cache:6379
+      - WORKERS=1
+      - LOG_FOLDER=/var/log/CTFd
+      - ACCESS_LOG=-
+      - ERROR_LOG=-
+      - REVERSE_PROXY=false
+    volumes:
+      - ctfd_uploads:/var/uploads
+      - ctfd_logs:/var/log/CTFd
+    depends_on:
+      - ctfd_db
+      - ctfd_cache
+    networks:
+      - nighthawk_net
+
+  ctfd_db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd_root_secret
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd_pass
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - ctfd_db_data:/var/lib/mysql
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+    networks:
+      - nighthawk_net
+
+  ctfd_cache:
+    image: redis:6-alpine
+    restart: always
+    volumes:
+      - ctfd_redis_data:/data
+    networks:
+      - nighthawk_net
+
+  # Stage 1 & 2: Static Defaced Portal & OSINT/Stego Target
+  stage1_2_web:
+    build:
+      context: ./stage1_osint
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - nighthawk_net
+
+  # Stage 4: Vulnerable C2 Backdoor Web Application
+  stage4_web:
+    image: php:8.1-apache
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./stage4_web/src:/var/www/html
+    depends_on:
+      - stage4_db
+    command: >
+      bash -c "docker-php-ext-install mysqli && apache2-foreground"
+    networks:
+      - nighthawk_net
+
+  stage4_db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsecretpass
+      MYSQL_DATABASE: portal_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    volumes:
+      - ./stage4_web/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - nighthawk_net
+
+  # Stage 6: Hardened Ubuntu Vault Server (SSH Target)
+  stage6_vault:
+    build:
+      context: ./stage6_vault
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "2222:22"
+    networks:
+      - nighthawk_net
+
+volumes:
+  ctfd_uploads:
+  ctfd_logs:
+  ctfd_db_data:
+  ctfd_redis_data:
