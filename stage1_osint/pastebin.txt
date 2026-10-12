@@ -1,0 +1,17 @@
+================================================================================
+PASTEBIN LEAK - RAW EXCERPT [ID: gb_leak_49019]
+POSTED BY: GhostByte_Recon (Anonymous)
+================================================================================
+
+Target: NexaCore Dynamics Inc.
+Target Asset: Project Prometheus Autonomous Defense Suite
+
+Entry Vector Confirmed:
+We harvested valid corporate SSO credentials targeting Marcus Vance (m.vance@nexacore.local).
+His unscrubbed badges and internal staff directories left a trail right in plain sight.
+Investigate the photo if you think you can trace us, NexaCore. 
+The signature is stamped where amateur investigators never look.
+
+Next target: Shadow Admin Relay
+Status: COMPROMISED
+================================================================================
