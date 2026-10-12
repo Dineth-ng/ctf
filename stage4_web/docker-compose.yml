@@ -1,0 +1,4 @@
+name: nighthawk-member1
+include:
+  - path: ../docker-compose.yml
+    env_file: ../.env
